@@ -442,6 +442,7 @@ class UpdateVersion(bpy.types.Operator):
         version_str = self.version_to_string(version, padding)
         new_blend_file = version_str.join(re.split(r"v\d+", blend_file))
         new_blend_path = os.path.join(blend_dir, new_blend_file)
+        self.update_stamp_note(blend_file, new_blend_file)
         bpy.ops.wm.save_as_mainfile(filepath=new_blend_path, compress=True)
 
     def update_renderpath(self):
@@ -451,6 +452,16 @@ class UpdateVersion(bpy.types.Operator):
         version_str = self.version_to_string(version, padding)
         new_render_path = version_str.join(re.split(r"v\d+", render_path))
         bpy.context.scene.render.filepath = new_render_path
+
+    @staticmethod
+    def update_stamp_note(filename, new_filename):
+        stamp_note_text = bpy.context.scene.render.stamp_note_text
+        old_stamp_note_text = os.path.splitext(filename)[0]
+        new_stamp_note_text = os.path.splitext(new_filename)[0]
+        print(old_stamp_note_text, new_stamp_note_text)
+        if stamp_note_text == old_stamp_note_text:
+            bpy.context.scene.render.stamp_note_text = new_stamp_note_text
+
 
     def execute(self, context):
         wm = bpy.context.window_manager
